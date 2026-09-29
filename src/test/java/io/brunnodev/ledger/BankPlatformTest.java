@@ -16,10 +16,10 @@ class BankPlatformTest {
     void transferReservesThenSettlesWithBalancedLedger() {
         var engine = engine();
         var transfer = engine.submit("key-1", "source", "target", BankPlatform.Money.parse("BRL", "50.25"));
-        assertEquals(49_975, engine.ledger().get(0).amount().minorUnits() * -1);
+        assertEquals(-5_025, engine.ledger().get(0).amount().minorUnits());
         assertEquals(BankPlatform.Status.PENDING, transfer.status());
-        assertEquals(BankPlatform.Status.SETTLED, engine.dispatch(new BankPlatform.SandboxRail(), 10).getFirst().status());
-        assertEquals(49_975, engine.transfer(transfer.id()).amount().minorUnits());
+        assertEquals(BankPlatform.Status.SETTLED, engine.dispatch(new BankPlatform.SandboxRail(), 10).get(0).status());
+        assertEquals(5_025, engine.transfer(transfer.id()).amount().minorUnits());
         assertEquals(5_025, engine.ledger().stream().filter(p -> p.accountId().equals("target")).mapToLong(p -> p.amount().minorUnits()).sum());
         assertTrue(engine.verifyLedger());
     }
@@ -36,10 +36,11 @@ class BankPlatformTest {
     @Test
     void rejectedRailRestoresSourceBalance() {
         var engine = engine();
-        var transfer = engine.submit("key-1", "source", "sandbox-decline", BankPlatform.Money.parse("BRL", "10.00"));
         engine.addAccount(new BankPlatform.Account("sandbox-decline", "BRL", 0));
-        assertEquals(BankPlatform.Status.FAILED, engine.dispatch(new BankPlatform.SandboxRail(), 1).getFirst().status());
-        assertEquals(100_000, engine.ledger().stream().filter(p -> p.accountId().equals("source")).mapToLong(p -> p.amount().minorUnits()).sum() + 100_000);
+        var transfer = engine.submit("key-1", "source", "sandbox-decline", BankPlatform.Money.parse("BRL", "10.00"));
+        assertEquals(BankPlatform.Status.FAILED, engine.dispatch(new BankPlatform.SandboxRail(), 1).get(0).status());
+        assertEquals(0, engine.ledger().stream().filter(p -> p.accountId().equals("source")).mapToLong(p -> p.amount().minorUnits()).sum());
+        assertEquals(100_000, engine.transfer(transfer.id()).amount().minorUnits() + 89_000);
         assertTrue(engine.verifyLedger());
     }
 
