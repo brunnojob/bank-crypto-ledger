@@ -1,14 +1,12 @@
 # Bank Crypto Ledger
 
-An educational transaction ledger demonstrating AES-GCM payload encryption, signed records, idempotency and tamper-evident audit chaining.
+Java transfer engine with double-entry postings, balance reservation, idempotency, an authenticated outbox and AES-GCM data envelopes.
 
 ## Run
 
 ```bash
-python -m pip install .
-python ledger.py
+mvn test
+mvn exec:java
 ```
 
-Set `LEDGER_KEY` to a 32-byte hex key before use. Generate one with `python -c "import secrets; print(secrets.token_hex(32))"`.
-
-This is a local simulation, not a banking system or payment processor. Never use test keys for real financial data.
+The included rail is a deterministic sandbox adapter. The core is built for a real provider integration, but this repository does not move funds or claim a live bank connection. Configure provider credentials only in a private deployment.
