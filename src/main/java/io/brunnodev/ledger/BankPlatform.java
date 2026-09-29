@@ -198,6 +198,15 @@ public final class BankPlatform {
             }
         }
 
+        public Money balance(String accountId) {
+            lock.lock();
+            try {
+                return requireAccount(accountId).balance();
+            } finally {
+                lock.unlock();
+            }
+        }
+
         public Transfer transfer(String id) {
             lock.lock();
             try {
