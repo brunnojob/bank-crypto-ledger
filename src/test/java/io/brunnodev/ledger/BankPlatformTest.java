@@ -17,10 +17,13 @@ class BankPlatformTest {
         var engine = engine();
         var transfer = engine.submit("key-1", "source", "target", BankPlatform.Money.parse("BRL", "50.25"));
         assertEquals(-5_025, engine.ledger().get(0).amount().minorUnits());
+        assertEquals(94_975, engine.balance("source").minorUnits());
         assertEquals(BankPlatform.Status.PENDING, transfer.status());
         assertEquals(BankPlatform.Status.SETTLED, engine.dispatch(new BankPlatform.SandboxRail(), 10).get(0).status());
         assertEquals(5_025, engine.transfer(transfer.id()).amount().minorUnits());
         assertEquals(5_025, engine.ledger().stream().filter(p -> p.accountId().equals("target")).mapToLong(p -> p.amount().minorUnits()).sum());
+        assertEquals(94_975, engine.balance("source").minorUnits());
+        assertEquals(5_025, engine.balance("target").minorUnits());
         assertTrue(engine.verifyLedger());
     }
 
@@ -40,7 +43,8 @@ class BankPlatformTest {
         var transfer = engine.submit("key-1", "source", "sandbox-decline", BankPlatform.Money.parse("BRL", "10.00"));
         assertEquals(BankPlatform.Status.FAILED, engine.dispatch(new BankPlatform.SandboxRail(), 1).get(0).status());
         assertEquals(0, engine.ledger().stream().filter(p -> p.accountId().equals("source")).mapToLong(p -> p.amount().minorUnits()).sum());
-        assertEquals(100_000, engine.transfer(transfer.id()).amount().minorUnits() + 89_000);
+        assertEquals(1_000, engine.transfer(transfer.id()).amount().minorUnits());
+        assertEquals(100_000, engine.balance("source").minorUnits());
         assertTrue(engine.verifyLedger());
     }
 
