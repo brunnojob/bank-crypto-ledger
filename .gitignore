@@ -15,8 +15,8 @@ obj/
 *.db
 *.db-wal
 *.db-shm
-core
-core.*
+/core
+core.[0-9]*
 
 .output/
 .vercel/
