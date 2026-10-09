@@ -42,13 +42,14 @@ class Outbox:
         self.db.commit()
 
     def enqueue(self, project, kind, result, events=None, key=None):
-        if not isinstance(result, dict) or not isinstance(events or [], list):
+        events = [] if events is None else events
+        if not isinstance(result, dict) or not isinstance(events, list):
             raise ValueError("result must be an object and events an array")
         body = {
             "project": project,
             "kind": kind,
             "result": result,
-            "events": events or [],
+            "events": events,
         }
         key = key or hashlib.sha256(canonical(body).encode()).hexdigest()
         body["clientKey"] = key
@@ -135,7 +136,9 @@ class Outbox:
                 request, timeout=15
             ) as response:
                 data = json.loads(response.read(4096))
-                return response.status if data.get("persisted") is True else 502
+                if not isinstance(data, dict) or data.get("persisted") is not True:
+                    return 502
+                return response.status
         except urllib.error.HTTPError as error:
             return error.code
         except (ValueError, UnicodeDecodeError):

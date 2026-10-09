@@ -1,29 +1,33 @@
 # Bank Ledger
 
-Motor contábil e diário persistente de partidas balanceadas por moeda, com idempotência, bloqueio de arquivo, precisão inteira e verificação de encadeamento.
+An accounting engine and persistent journal of entries balanced by currency, with idempotency, file locking, integer precision, and hash-chain verification.
 
-## Executar
+## Run
 
-Requisitos: Java 17 e Maven.
+Requirements: Java 17 and Maven.
 
 ```sh
 mvn test
 mvn compile
 java -cp target/classes io.brunnodev.ledger.Journal ledger.log post entrada_1 caixa receita BRL 1250
-java -cp target/classes io.brunnodev.ledger.Journal ledger.log report > resultado.json
+java -cp target/classes io.brunnodev.ledger.Journal ledger.log report > result.json
 ```
 
-## Funcionamento
+## Behavior
 
-`Journal` registra as partidas locais e confere saldo por moeda. `BankPlatform` contém regras de transferência, contas e eventos. O projeto não movimenta fundos de instituições externas; integrações bancárias precisam de contrato e credenciais próprias.
+`Journal` records local entries and verifies balances by currency. `BankPlatform` contains transfer, account, and event rules. External banking integrations require their own contracts and credentials; this project does not move funds held by external institutions.
 
-## Persistência de resultados
+## Result synchronization
 
-O arquivo de operações está em [vercel-home-telemetry-api.vercel.app](https://vercel-home-telemetry-api.vercel.app/laboratory.html?project=bank-crypto-ledger). As migrações Supabase estão no [repositório da API](https://github.com/brunnojob/vercel-home-telemetry-api/tree/main/supabase/migrations).
+The [operations archive](https://vercel-home-telemetry-api.vercel.app/laboratory.html?project=bank-crypto-ledger) stores execution results. Supabase migrations are in the [API repository](https://github.com/brunnojob/vercel-home-telemetry-api/tree/main/supabase/migrations).
 
 ```sh
-python cloud/sync.py enqueue resultado.json --project bank-crypto-ledger
+python cloud/sync.py enqueue result.json --project bank-crypto-ledger
 python cloud/sync.py sync
 ```
 
-Defina `BRUNNODEV_ACCESS_TOKEN` com sua sessão. A fila SQLite conserva os relatórios até confirmação do servidor; o mesmo conteúdo não gera registros duplicados. Tokens não são gravados no código.
+Set `BRUNNODEV_ACCESS_TOKEN` to your session token. The SQLite outbox retains reports until the server confirms persistence; identical content does not create duplicate records. Tokens are not stored in source code. To run the synchronization tests:
+
+```sh
+python -m unittest discover -s cloud
+```
