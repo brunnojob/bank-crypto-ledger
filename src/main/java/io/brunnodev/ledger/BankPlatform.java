@@ -175,7 +175,7 @@ public final class BankPlatform {
             try {
                 List<Transfer> processed = new ArrayList<>();
                 while (processed.size() < maxItems && !outbox.isEmpty()) {
-                    String id = outbox.removeFirst();
+                    String id = outbox.peekFirst();
                     Transfer transfer = transfers.get(id);
                     RailResult result = rail.submit(id, transfer.source(), transfer.destination(), transfer.amount());
                     if (result.accepted()) {
@@ -190,6 +190,7 @@ public final class BankPlatform {
                         transfer = transfer.withStatus(Status.FAILED, result.reference());
                     }
                     transfers.put(id, transfer);
+                    outbox.removeFirst();
                     processed.add(transfer);
                 }
                 return List.copyOf(processed);
