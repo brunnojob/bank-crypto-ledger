@@ -24,3 +24,9 @@ Use the [shared operations archive client](https://github.com/brunnojob/vercel-h
 ## License
 
 Original source and documentation are MIT licensed; see [LICENSE](LICENSE). Third-party dependencies and media retain their respective terms. Maintained by [Brunno Dev](https://brunnodev.store).
+
+## Implementation update
+
+Transfers reserve destination capacity for all pending credits before debiting the source. Currency validation and integer overflow checks preserve balanced postings when a credit would exceed the account range. `tests/OverflowCheck.java` and `tests/JournalCheck.java` run in the Java regression workflow.
+
+Contribution trailer: `Co-authored-by: nyctophile <33561761+ineedfoundmyway@users.noreply.github.com>`.

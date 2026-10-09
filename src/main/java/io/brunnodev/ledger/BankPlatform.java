@@ -64,6 +64,7 @@ public final class BankPlatform {
     public Account(String id, String currency, long openingBalance) {
       if (id == null || id.isBlank() || openingBalance < 0)
         throw new IllegalArgumentException("invalid account");
+      new Money(currency, openingBalance);
       this.id = id;
       this.currency = currency;
       this.balance = openingBalance;
@@ -213,6 +214,11 @@ public final class BankPlatform {
           throw new IllegalArgumentException("account or currency mismatch");
         if (source.balance().minorUnits() < amount.minorUnits())
           throw new IllegalStateException("insufficient funds");
+        long reservedDestination = destination.balance().minorUnits();
+        for (Transfer pending : transfers.values())
+          if (pending.status() == Status.PENDING && pending.destination().equals(destinationId))
+            reservedDestination = Math.addExact(reservedDestination, pending.amount().minorUnits());
+        Math.addExact(reservedDestination, amount.minorUnits());
         String id = "tr_" + digest(idempotencyKey + "|" + sequence).substring(0, 20);
         source.add(-amount.minorUnits());
         append(id, sourceId, new Money(amount.currency(), -amount.minorUnits()));

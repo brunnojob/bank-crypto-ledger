@@ -1,0 +1,13 @@
+name: Java ledger regressions
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: mkdir -p build-native && javac -d build-native src/main/java/io/brunnodev/ledger/BankPlatform.java src/main/java/io/brunnodev/ledger/Journal.java tests/JournalCheck.java tests/OverflowCheck.java
+      - run: java -ea -cp build-native JournalCheck && java -ea -cp build-native OverflowCheck
