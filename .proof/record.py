@@ -2,6 +2,7 @@ import hashlib
 import html
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -27,7 +28,11 @@ def relative(value):
 
 
 def digest(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    value = hashlib.sha256()
+    with path.open('rb') as stream:
+        for chunk in iter(lambda: stream.read(65536), b''):
+            value.update(chunk)
+    return value.hexdigest()
 
 
 def execute(case):
@@ -39,7 +44,10 @@ def execute(case):
         reject('timeout outside supported range')
     data = case.get('stdin', '')
     if 'input' in case:
-        data = relative(case['input']).read_text()
+        source_path = relative(case['input'])
+        if source_path.stat().st_size > LIMIT:
+            reject('input exceeds supported size')
+        data = source_path.read_text()
     if not isinstance(data, str) or len(data.encode()) > LIMIT:
         reject('input exceeds supported size')
     started = time.monotonic()
@@ -54,7 +62,10 @@ def execute(case):
             elif os.fstat(output.fileno()).st_size > LIMIT:
                 reason = 'output capacity exceeded'
             if reason:
-                os.killpg(process.pid, signal.SIGKILL)
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
                 break
             time.sleep(0.05)
         code = process.wait()
@@ -84,7 +95,9 @@ def preview(report):
         if case.get('display') is False:
             continue
         lines.extend(['', ('PASS ' if case['passed'] else 'FAIL ') + case['name'], '$ ' + ' '.join(case['argv'])])
-        interesting = [v.strip() for v in case['output'].splitlines() if v.strip()]
+        clean = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', case['output'])
+        clean = ''.join(v for v in clean if ord(v) >= 32 or v in '\n\t')
+        interesting = [v.strip() for v in clean.splitlines() if v.strip()]
         lines.extend(interesting[:8])
         if len(interesting) > 8:
             lines.append('Full output: evidence.json')

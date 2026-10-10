@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="530" viewBox="0 0 1100 530">
+<rect width="1100" height="530" rx="12" fill="#0d1117"/>
+<title>Recorded program execution</title>
+<g font-family="monospace" font-size="16">
+<text x="24" y="36" fill="#c9d1d9">brunnojob/bank-crypto-ledger</text>
+<text x="24" y="58" fill="#c9d1d9">Executed: 2026-10-10T02:34:44.546302+00:00</text>
+<text x="24" y="80" fill="#c9d1d9">Source: 842a14e7fe87</text>
+<text x="24" y="102" fill="#c9d1d9"></text>
+<text x="24" y="124" fill="#3fb950">PASS mvn --batch-mode test</text>
+<text x="24" y="146" fill="#79c0ff">$ bash -e -o pipefail -c mvn --batch-mode test</text>
+<text x="24" y="168" fill="#c9d1d9">[INFO] Scanning for projects...</text>
+<text x="24" y="190" fill="#c9d1d9">[INFO]</text>
+<text x="24" y="212" fill="#c9d1d9">[INFO] ------------------&lt; io.brunnodev:bank-crypto-ledger &gt;-------------------</text>
+<text x="24" y="234" fill="#c9d1d9">[INFO] Building bank-crypto-ledger 1.0.0</text>
+<text x="24" y="256" fill="#c9d1d9">[INFO]   from pom.xml</text>
+<text x="24" y="278" fill="#c9d1d9">[INFO] --------------------------------[ jar ]---------------------------------</text>
+<text x="24" y="300" fill="#c9d1d9">[INFO] Loaded 24044 auto-discovered prefixes for remote repository central (prefixes-central.txt)</text>
+<text x="24" y="322" fill="#c9d1d9">[INFO] Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-</text>
+<text x="24" y="344" fill="#c9d1d9">resources-plugin/3.5.0/maven-resources-plugin-3.5.0.pom</text>
+<text x="24" y="366" fill="#c9d1d9">Full output: evidence.json</text>
+<text x="24" y="388" fill="#c9d1d9"></text>
+<text x="24" y="410" fill="#3fb950">PASS Persist double-entry journal and replay idempotently</text>
+<text x="24" y="432" fill="#79c0ff">$ python .proof/demo.py</text>
+<text x="24" y="454" fill="#c9d1d9">{&quot;idempotent_replay&quot;: true, &quot;recovered&quot;: {&quot;balanced&quot;: true, &quot;balancesMinor&quot;: {&quot;cash:BRL&quot;: -1250, </text>
+<text x="24" y="476" fill="#c9d1d9">&quot;revenue:BRL&quot;: 1250}}}</text>
+</g>
+</svg>
