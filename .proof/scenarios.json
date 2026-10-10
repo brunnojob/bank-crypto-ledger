@@ -1,0 +1,33 @@
+{
+  "repository": "brunnojob/bank-crypto-ledger",
+  "inputs": [
+    ".proof/scenarios.json",
+    ".proof/demo.py"
+  ],
+  "cases": [
+    {
+      "name": "mvn --batch-mode test",
+      "argv": [
+        "bash",
+        "-e",
+        "-o",
+        "pipefail",
+        "-c",
+        "mvn --batch-mode test"
+      ],
+      "timeout": 900,
+      "display": true
+    },
+    {
+      "name": "Persist double-entry journal and replay idempotently",
+      "argv": [
+        "python",
+        ".proof/demo.py"
+      ],
+      "contains": [
+        "\"idempotent_replay\": true"
+      ],
+      "timeout": 120
+    }
+  ]
+}
