@@ -49,6 +49,28 @@ class BankPlatformTest {
     }
 
     @Test
+    void railExceptionPreservesPendingTransferForRetry() {
+        var engine = engine();
+        var transfer = engine.submit("retry-key", "source", "target", BankPlatform.Money.parse("BRL", "10.00"));
+        BankPlatform.BankRail unavailable = (id, source, destination, amount) -> {
+            throw new IllegalStateException("rail unavailable");
+        };
+        assertThrows(IllegalStateException.class, () -> engine.dispatch(unavailable, 1));
+        assertEquals(BankPlatform.Status.PENDING, engine.transfer(transfer.id()).status());
+        assertEquals(99_000, engine.balance("source").minorUnits());
+        assertEquals(0, engine.balance("target").minorUnits());
+        assertTrue(engine.verifyLedger());
+        var retried = engine.dispatch(new BankPlatform.SandboxRail(), 1);
+        assertEquals(1, retried.size());
+        assertEquals(transfer.id(), retried.get(0).id());
+        assertEquals(BankPlatform.Status.SETTLED, retried.get(0).status());
+        assertEquals(1_000, engine.balance("target").minorUnits());
+        assertTrue(engine.dispatch(new BankPlatform.SandboxRail(), 1).isEmpty());
+        assertEquals(4, engine.ledger().size());
+        assertTrue(engine.verifyLedger());
+    }
+
+    @Test
     void authenticatedEnvelopeRejectsContextChanges() {
         var envelope = new BankPlatform.Envelope(new byte[32]);
         var encrypted = envelope.encrypt("account-reference", "transfer-1");
