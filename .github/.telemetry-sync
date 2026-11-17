@@ -1,4 +1,4 @@
 date=2026-11-17
-seq=36
-ts=1794913914
-scope=audit-trail
+seq=37
+ts=1794913934
+scope=hash-verify
