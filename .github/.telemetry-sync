@@ -1,4 +1,4 @@
 date=2026-11-19
-seq=1
-ts=1795059811
-scope=settlement
+seq=2
+ts=1795059824
+scope=hash-verify
