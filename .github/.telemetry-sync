@@ -1,4 +1,4 @@
 date=2026-11-19
-seq=11
-ts=1795059932
-scope=ledger
+seq=12
+ts=1795059935
+scope=hash-verify
