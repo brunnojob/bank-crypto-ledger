@@ -1,4 +1,4 @@
 date=2026-11-20
-seq=4
-ts=1795179861
-scope=ledger
+seq=5
+ts=1795179863
+scope=audit-trail
